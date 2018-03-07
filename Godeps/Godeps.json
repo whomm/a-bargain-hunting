@@ -1,0 +1,11 @@
+{
+	"ImportPath": "github.com/whomm/a-bargain-hunting",
+	"GoVersion": "go1.8",
+	"GodepVersion": "v79",
+	"Deps": [
+		{
+			"ImportPath": "github.com/axgle/mahonia",
+			"Rev": "3358181d7394e26beccfae0ffde05193ef3be33a"
+		}
+	]
+}
