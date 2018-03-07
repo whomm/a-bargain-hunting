@@ -4,6 +4,7 @@ package main
 
 
 import (
+	"strconv"
 	"sort"
 	"time"
 	"fmt"
@@ -12,7 +13,7 @@ import (
 	"os"
 	"os/signal"
 )
-/*
+
 //监控列表
 var monitoringtargets = [...][]string{
 	{"浦发银行", "sh600000"},
@@ -66,7 +67,7 @@ var monitoringtargets = [...][]string{
 	{"中国银行", "sh601988"},
 	{"中国重工", "sh601989"},
 }
-*/
+
 
 
 var blist = struct{  
@@ -95,12 +96,13 @@ func ndaylow(code string, day int){
 	for {
 		g, err := util.Get_real_time_data(code)
 		if err == nil{
+
 			theb.Update(g)
-			blist.RLock()
+
+			blist.Lock()
 			blist.m[code] = theb
-			blist.RUnlock()
+			blist.Unlock()
 		}
-		fmt.Println(theb.Tosting())
 		time.Sleep(time.Second)
 	}
 }
@@ -118,7 +120,7 @@ func (s Tolowlist) Len() (int) {
 }
 
 func (s Tolowlist) Less(i, j int) (bool) {
-	return s[i].tolow > s[j].tolow
+	return s[i].tolow < s[j].tolow
 }
 
 func (s Tolowlist) Swap(i, j int) {
@@ -136,11 +138,18 @@ func getbydes(){
 		}
 		blist.RUnlock()
 		sort.Sort(tolowlist)
+
+		lineno := 0
+		fmt.Printf("\033[2J")
 		for _,j := range tolowlist {
 			blist.RLock()
-			fmt.Println(blist.m[j.code].Tosting())
+			fmt.Printf("\033["+strconv.Itoa(lineno)+";0H")
+			fmt.Print(blist.m[j.code].Tosting()+"\r")
 			blist.RUnlock()
+
+			lineno += 1
 		}
+		
 
 		time.Sleep(time.Second)
 
@@ -155,9 +164,10 @@ func main(){
 	signal.Notify(c, os.Interrupt, os.Kill)
 	
 
-	go ndaylow("sh600999",30)
-	go ndaylow("sh601857",30)
-
+	for _,stockc := range monitoringtargets {
+		go ndaylow(stockc[1],30)
+	}
+	
 	go getbydes()
 
 	LOOP:
