@@ -3,8 +3,15 @@ package main
 
 
 
-import "fmt"
-import "github.com/whomm/a-bargain-hunting/util"
+import (
+	"sort"
+	"time"
+	"fmt"
+	"github.com/whomm/a-bargain-hunting/util"
+	"sync"
+	"os"
+	"os/signal"
+)
 /*
 //监控列表
 var monitoringtargets = [...][]string{
@@ -62,13 +69,107 @@ var monitoringtargets = [...][]string{
 */
 
 
-func main(){
-	xp,_:=util.Get_k_daily("sh601989")
-	for _,v := range xp {
-		fmt.Println(v.Date, v.High,)
-	}
-	g,_ := util.Get_real_time_data("sh601989")
-	fmt.Print(g.Stockname,g.Now, g.Date, g.Time)
+var blist = struct{  
+    sync.RWMutex  
+    m map[string]util.Bargain  
+}{m: make(map[string]util.Bargain)} 
+
+var c chan os.Signal
+
+
+func ndaylow(code string, day int){
+	xp,_:=util.Get_k_daily(code)
 	
+	length  := len(xp) -1
+	theb := util.Bargain{}
+	theb.Low = 10000000
+	theb.Code=code
+	theb.Day = day
+
+	for i :=0; i<day; i++  {
+		if length>=i && xp[length-i].Low < theb.Low  {
+			theb.Low = xp[length-i].Low
+		}
+	}
+
+	for {
+		g, err := util.Get_real_time_data(code)
+		if err == nil{
+			theb.Update(g)
+			blist.RLock()
+			blist.m[code] = theb
+			blist.RUnlock()
+		}
+		fmt.Println(theb.Tosting())
+		time.Sleep(time.Second)
+	}
+}
+
+
+type Tolow struct {
+	code  string
+	tolow float64
+}
+
+type Tolowlist []Tolow
+
+func (s Tolowlist) Len() (int) {
+	return len(s)
+}
+
+func (s Tolowlist) Less(i, j int) (bool) {
+	return s[i].tolow > s[j].tolow
+}
+
+func (s Tolowlist) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func getbydes(){
+
+	for {
+
+		tolowlist := Tolowlist{}
+		blist.RLock()
+		for _,i:= range blist.m{
+			tolowlist = append(tolowlist, Tolow{code:i.Code, tolow: i.Tolow})
+		}
+		blist.RUnlock()
+		sort.Sort(tolowlist)
+		for _,j := range tolowlist {
+			blist.RLock()
+			fmt.Println(blist.m[j.code].Tosting())
+			blist.RUnlock()
+		}
+
+		time.Sleep(time.Second)
+
+	}
+}
+
+
+
+
+func main(){
+	c = make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, os.Kill)
+	
+
+	go ndaylow("sh600999",30)
+	go ndaylow("sh601857",30)
+
+	go getbydes()
+
+	LOOP:
+	for{
+        select {
+        case s := <-c:
+            fmt.Println()
+            fmt.Println("interf", s)
+            break LOOP
+        default:
+        }
+        time.Sleep(500 * time.Millisecond)
+    }
 	
 }
