@@ -21,7 +21,7 @@ type Kdata struct {
 
 	//成交量
 	Volume int64
-	
+
 	//证券代码
 	Code string
 }
@@ -59,14 +59,11 @@ type IfengKdata struct {
 	Vma20 float64
 
 	//换手率
-	ChangeRate float64 
-
+	ChangeRate float64
 }
 
-
-
 //新浪实时股票价格（实时数据接口 http://hq.sinajs.cn/list=sh601006）
-type SinaRealtime struct{
+type SinaRealtime struct {
 	//股票名字
 	Stockname string
 	//今日开盘价
@@ -91,28 +88,26 @@ type SinaRealtime struct{
 	//“买一” 申请4695股，即47手
 	Buy1volume int64
 	//“买一”报价；
-	Buy1price float64
+	Buy1price  float64
 	Buy2volume int64
-	Buy2price float64
+	Buy2price  float64
 	Buy3volume int64
-	Buy3price float64
+	Buy3price  float64
 	Buy4volume int64
-	Buy4price float64
+	Buy4price  float64
 	Buy5volume int64
-	Buy5price float64
+	Buy5price  float64
 
 	Sell1volume int64
-	Sell1price float64
+	Sell1price  float64
 	Sell2volume int64
-	Sell2price float64
+	Sell2price  float64
 	Sell3volume int64
-	Sell3price float64
+	Sell3price  float64
 	Sell4volume int64
-	Sell4price float64
+	Sell4price  float64
 	Sell5volume int64
-	Sell5price float64
-	
-
+	Sell5price  float64
 
 	//日期
 	Date string
@@ -120,5 +115,4 @@ type SinaRealtime struct{
 	Time string
 	//未知
 	Mscond string
-
 }
