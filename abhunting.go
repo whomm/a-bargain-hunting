@@ -93,6 +93,7 @@ func (s Tolowlist) Swap(i, j int) {
 
 func getbydes(){
 
+	fmt.Print("\033[2J")
 	for {
 
 		tolowlist := Tolowlist{}
@@ -103,12 +104,11 @@ func getbydes(){
 		blist.RUnlock()
 		sort.Sort(tolowlist)
 
-		lineno := 0
-		fmt.Printf("\033[2J")
+		lineno := 2
+		fmt.Print("\033[1;0H\033[K股票代码\t 股票名称\t价格\t涨幅\t更新时间\t       最低价\t周期/天")
 		for _,j := range tolowlist {
 			blist.RLock()
-			fmt.Printf("\033["+strconv.Itoa(lineno)+";0H")
-			fmt.Print(blist.m[j.code].Tosting()+"\r")
+			fmt.Print("\033["+strconv.Itoa(lineno)+";0H\033[K"+blist.m[j.code].Tosting())
 			blist.RUnlock()
 
 			lineno += 1
