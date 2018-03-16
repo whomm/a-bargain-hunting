@@ -12,9 +12,12 @@
 
 ## 编译运行
 
+    go get github.com/whomm/a-bargain-hunting
+    cd $GOPATH/src/github.com/whomm/a-bargain-hunting
     godep get
-    godep go build abhunting.go
-    ./abhunting
+    godep go build
+    godep go install
+    a-bargain-hunting   
 
 ## 使用说明
 界面截图：
