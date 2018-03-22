@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/whomm/a-bargain-hunting/util"
 	"os"
 	"os/signal"
 	"sort"
 	"strconv"
 	"sync"
 	"time"
+
+	"github.com/whomm/a-bargain-hunting/util"
 )
 
 var blist = struct {

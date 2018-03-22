@@ -6,22 +6,16 @@ type Kdata struct {
 	//低频数据时为：YYYY-MM-DD
 	//高频数为：YYYY-MM-DD HH:MM
 	Date string
-
 	//开盘价
 	Open float64
-
 	//收盘价
 	Close float64
-
 	//最高价
 	High float64
-
 	//最低价
 	Low float64
-
 	//成交量
 	Volume int64
-
 	//证券代码
 	Code string
 }

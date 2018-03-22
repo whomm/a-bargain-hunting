@@ -2,12 +2,13 @@ package util
 
 import (
 	"encoding/json"
-	"github.com/axgle/mahonia"
 	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/axgle/mahonia"
 )
 
 type IfengRespData struct {
