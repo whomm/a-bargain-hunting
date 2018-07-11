@@ -50,7 +50,7 @@ func Get_k_daily(code string) ([]IfengKdata, error) {
 		tmp.Vma5, _ = strconv.ParseFloat(strs[11], 64)
 		tmp.Vma10, _ = strconv.ParseFloat(strs[12], 64)
 		tmp.Vma20, _ = strconv.ParseFloat(strs[13], 64)
-		tmp.ChangeRate, _ = strconv.ParseFloat(strs[14], 64)
+		tmp.ChangeRate = 0 // strconv.ParseFloat(strs[14], 64)
 
 		hisdata = append(hisdata, tmp)
 	}
