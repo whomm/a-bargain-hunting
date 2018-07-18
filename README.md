@@ -1,4 +1,4 @@
-# a-bargain-hunting [![Build Status]https://api.travis-ci.org/whomm/a-bargain-hunting.svg?branch=master]
+# a-bargain-hunting [![Build Status](https://api.travis-ci.org/whomm/a-bargain-hunting.svg?branch=master)](https://travis-ci.org/whomm/a-bargain-hunting)
 
 中证500成分股，近30日最低价top50。
 
