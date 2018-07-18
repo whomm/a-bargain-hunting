@@ -1,9 +1,11 @@
-# a-bargain-hunting
+# a-bargain-hunting [![Build Status]https://api.travis-ci.org/whomm/a-bargain-hunting.svg?branch=master]
 
 中证500成分股，近30日最低价top50。
 
 实时数据；动态刷新；抄底利器。
 ## 构建说明
+go1.8+
+
 日k历史数据来源：http://api.finance.ifeng.com/akdaily/?code=sh600848&type=last （部分数据更新不及时）
 
 实时数据来源：http://hq.sinajs.cn/list=sh600848 （相对稳定）

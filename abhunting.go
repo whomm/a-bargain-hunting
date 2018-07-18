@@ -12,11 +12,13 @@ import (
 	"github.com/whomm/a-bargain-hunting/util"
 )
 
-var blist = struct {
-	sync.RWMutex
-	m map[string]util.Bargain
-}{m: make(map[string]util.Bargain)}
+type Int64Slice []int64
 
+func (p Int64Slice) Len() int           { return len(p) }
+func (p Int64Slice) Less(i, j int) bool { return p[i] < p[j] }
+func (p Int64Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
+
+var blist sync.Map
 var c chan os.Signal
 
 func ndaylow(code string, day int) {
@@ -24,7 +26,7 @@ func ndaylow(code string, day int) {
 	var xp []util.IfengKdata
 	for retry := 0; retry < 3; retry++ {
 		var err error
-		xp, err = util.Get_k_daily(code)
+		xp, err = util.Get_k_daily(code) //todo:这需要确认一下 不要当前交易日的
 		if err == nil && len(xp) > 0 {
 			break
 		}
@@ -42,21 +44,28 @@ func ndaylow(code string, day int) {
 	theb.Code = code
 	theb.Day = day
 
+	var volumendaylist Int64Slice
 	for i := 0; i < day; i++ {
-		if length >= i && xp[length-i].Low < theb.Low {
-			theb.Low = xp[length-i].Low
+		if length >= i {
+			if xp[length-i].Low < theb.Low {
+				theb.Low = xp[length-i].Low
+			}
+			volumendaylist = append(volumendaylist, xp[length-i].Volume)
 		}
+	}
+	sort.Sort(volumendaylist)
+	//计算中位数
+	if day&1 == 1 {
+		theb.VolumeMe = volumendaylist[day/2]
+	} else {
+		theb.VolumeMe = (volumendaylist[day/2] + volumendaylist[day/2-1]) / 2
 	}
 
 	for {
 		g, err := util.Get_real_time_data(code)
 		if err == nil {
-
 			theb.Update(g)
-
-			blist.Lock()
-			blist.m[code] = theb
-			blist.Unlock()
+			blist.Store(code, theb)
 		}
 		time.Sleep(time.Second)
 	}
@@ -89,19 +98,19 @@ func getbydes() {
 	for {
 
 		tolowlist := Tolowlist{}
-		blist.RLock()
-		for _, i := range blist.m {
-			tolowlist = append(tolowlist, Tolow{code: i.Code, tolow: i.Tolow})
-		}
-		blist.RUnlock()
+		blist.Range(func(key, i interface{}) bool {
+			tolowlist = append(tolowlist, Tolow{code: i.(util.Bargain).Code, tolow: i.(util.Bargain).Tolow})
+			return true
+		})
+
 		sort.Sort(tolowlist)
 
 		lineno := 2
 		fmt.Print("\033[1;0H\033[K股票代码\t 股票名称\t价格\t涨幅\t更新时间\t       最低价\t周期/天")
 		for _, j := range tolowlist {
-			blist.RLock()
-			fmt.Print("\033[" + strconv.Itoa(lineno) + ";0H\033[K" + blist.m[j.code].Tosting())
-			blist.RUnlock()
+			if now, ok := blist.Load(j.code); ok {
+				fmt.Print("\033[" + strconv.Itoa(lineno) + ";0H\033[K" + now.(util.Bargain).Tosting())
+			}
 
 			lineno++
 			if lineno >= 50 {
@@ -135,5 +144,4 @@ LOOP:
 		}
 		time.Sleep(500 * time.Millisecond)
 	}
-
 }

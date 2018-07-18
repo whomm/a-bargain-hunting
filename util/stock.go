@@ -18,7 +18,7 @@ type IfengRespData struct {
 var DefaultClient = &http.Client{}
 
 // 获取历史日线数据
-// http://api.finance.ifeng.com/akdaily/?code=sh600848&type=last
+// http://api.finance.ifeng.com/akdaily/?code=sh600036&type=last
 
 func Get_k_daily(code string) ([]IfengKdata, error) {
 
