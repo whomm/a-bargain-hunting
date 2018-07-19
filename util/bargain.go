@@ -30,7 +30,7 @@ type Bargain struct {
 }
 
 func (this Bargain) Tosting() string {
-	return fmt.Sprintf("%v\t%5s\t%v\t%.2f%%\t%v\t%.2f\t%v", this.Code, this.Stockname, this.Now, this.Tolow, this.Updatetime, this.Low, this.Day)
+	return fmt.Sprintf("%v\t%5s\t%v\t%+04.2f%%\t%10d\t%+04.2f%%\t%.2f\t%10d\t%v\t%v", this.Code, this.Stockname, this.Now, this.Tolow, this.Volume, this.TomMe, this.Low, this.VolumeMe, this.Day, this.Updatetime)
 
 }
 
@@ -49,16 +49,20 @@ func (this *Bargain) Update(rt *SinaRealtime) {
 
 	nowmin := hour*60 + min
 	passmin := 1
-	if nowmin > 9*60+30 && nowmin <= 11*60+30 {
+	if nowmin > 9*60+15 && nowmin <= 11*60+30 {
 		//上午的交易时间段
-		passmin = nowmin - 9*60 + 30
-	}
-	if nowmin >= 13*60 && nowmin <= 15*60 {
+		passmin = nowmin - 9*60 - 15
+	} else if nowmin > 11*60+30 && nowmin < 13*60 {
+		passmin = 2*60 + 15
+	} else if nowmin >= 13*60 && nowmin <= 15*60 {
 		//下午交易时间段
-		passmin = nowmin - 13*60 + 2*60
+		passmin = nowmin - 13*60 + 2*60 + 15
+	} else if nowmin > 15*60 {
+		passmin = 4*60 + 15
 	}
 
-	this.TomMe = (float64(rt.Volume)*float64(5*60)/float64(passmin) - float64(this.VolumeMe)) / float64(this.VolumeMe) * 100
+	//fmt.Println(rt.Volume, passmin, this.VolumeMe)
+	this.TomMe = (float64(rt.Volume)*float64(4*60+15)/float64(passmin) - float64(this.VolumeMe)) / float64(this.VolumeMe) * 100
 
 	if rt.Todayhigh < 0.0001 && rt.Open < 0.001 {
 		//停盘的

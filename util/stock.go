@@ -17,7 +17,7 @@ type IfengRespData struct {
 
 var DefaultClient = &http.Client{}
 
-// 获取历史日线数据
+// 获取历史日线数据(不包含当日)
 // http://api.finance.ifeng.com/akdaily/?code=sh600036&type=last
 
 func Get_k_daily(code string) ([]IfengKdata, error) {
@@ -41,7 +41,8 @@ func Get_k_daily(code string) ([]IfengKdata, error) {
 		tmp.High, _ = strconv.ParseFloat(strs[2], 64)
 		tmp.Close, _ = strconv.ParseFloat(strs[3], 64)
 		tmp.Low, _ = strconv.ParseFloat(strs[4], 64)
-		tmp.Volume, _ = strconv.ParseInt(strs[5], 10, 64)
+		tvlum, _ := strconv.ParseFloat(strs[5], 64)
+		tmp.Volume = int64(tvlum * 100)
 		tmp.ChangeAmount, _ = strconv.ParseFloat(strs[6], 64)
 		tmp.QuoteChange, _ = strconv.ParseFloat(strs[7], 64)
 		tmp.Ma5, _ = strconv.ParseFloat(strs[8], 64)

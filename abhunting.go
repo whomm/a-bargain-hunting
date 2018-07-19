@@ -26,7 +26,7 @@ func ndaylow(code string, day int) {
 	var xp []util.IfengKdata
 	for retry := 0; retry < 3; retry++ {
 		var err error
-		xp, err = util.Get_k_daily(code) //todo:这需要确认一下 不要当前交易日的
+		xp, err = util.Get_k_daily(code)
 		if err == nil && len(xp) > 0 {
 			break
 		}
@@ -60,6 +60,7 @@ func ndaylow(code string, day int) {
 	} else {
 		theb.VolumeMe = (volumendaylist[day/2] + volumendaylist[day/2-1]) / 2
 	}
+	//fmt.Println(volumendaylist, theb.VolumeMe)
 
 	for {
 		g, err := util.Get_real_time_data(code)
@@ -75,6 +76,7 @@ func ndaylow(code string, day int) {
 type Tolow struct {
 	code  string
 	tolow float64
+	tome  float64
 }
 
 //Tolowlist 最低价涨幅排序列表
@@ -106,7 +108,7 @@ func getbydes() {
 		sort.Sort(tolowlist)
 
 		lineno := 2
-		fmt.Print("\033[1;0H\033[K股票代码\t 股票名称\t价格\t涨幅\t更新时间\t       最低价\t周期/天")
+		fmt.Print("\033[1;0H\033[K股票代码\t 股票名称\t价格\t价变\t成交量    \t量变\t最低价\t 量中位数    \t周期/天\t更新时间")
 		for _, j := range tolowlist {
 			if now, ok := blist.Load(j.code); ok {
 				fmt.Print("\033[" + strconv.Itoa(lineno) + ";0H\033[K" + now.(util.Bargain).Tosting())
@@ -127,7 +129,7 @@ func main() {
 	c = make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, os.Kill)
 
-	for _, stockc := range util.Zz500 {
+	for _, stockc := range util.Sz50 {
 		go ndaylow(stockc[1], 30)
 	}
 
