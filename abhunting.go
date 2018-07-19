@@ -129,8 +129,8 @@ func main() {
 	c = make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, os.Kill)
 
-	for _, stockc := range util.Sz50 {
-		go ndaylow(stockc[1], 30)
+	for _, stockc := range util.Zz500 {
+		go ndaylow(stockc[0], 30)
 	}
 
 	go getbydes()
